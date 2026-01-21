@@ -1,0 +1,12 @@
+# Core dependency — required for the web UI (app.py). The CLI
+# (summarize.py) and the extractive summarizer work without it.
+flask>=3.0.0
+
+# Optional — only needed if you want LLM-based summarization instead
+# of the built-in offline extractive summarizer. Uncomment whichever
+# provider you plan to use (matching the API key you set).
+# anthropic>=0.34.0
+# openai>=1.40.0
+
+# Optional — for running the test suite.
+pytest>=7.4.0

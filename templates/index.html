@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Text Summarizer</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #1c2130;
+      --muted: #5b6272;
+      --accent: #4f5df3;
+      --accent-dark: #3c48c9;
+      --border: #e1e3ec;
+      --error-bg: #fdecec;
+      --error-ink: #a13333;
+      --ok-bg: #eef8f0;
+      --ok-ink: #2c7a43;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    header {
+      margin-bottom: 24px;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      margin: 0 0 4px;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .badge {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      background: #eef0fe;
+      color: var(--accent-dark);
+      border: 1px solid #d7dafc;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 2px rgba(20, 20, 40, 0.03);
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+      color: var(--ink);
+      background: #fbfbfe;
+    }
+    textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      align-items: flex-end;
+    }
+    .field { flex: 1; min-width: 180px; }
+    .length-options {
+      display: flex;
+      gap: 8px;
+    }
+    .length-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      background: #fbfbfe;
+      flex: 1;
+      justify-content: center;
+    }
+    .length-options input[type="radio"] { accent-color: var(--accent); }
+    .length-options input:checked + span,
+    .length-options label:has(input:checked) {
+      color: var(--accent-dark);
+    }
+    input[type="file"] {
+      font-size: 0.88rem;
+    }
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: var(--accent-dark); }
+    .hint { color: var(--muted); font-size: 0.82rem; }
+    .divider {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin: 14px 0;
+      position: relative;
+    }
+    .alert {
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 0.9rem;
+    }
+    .alert.error { background: var(--error-bg); color: var(--error-ink); border: 1px solid #f3caca; }
+    .result h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+    .summary-text {
+      background: #fbfbfe;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      white-space: pre-wrap;
+      font-size: 1rem;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .stats strong { color: var(--ink); }
+    .backend-tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      background: var(--ok-bg);
+      color: var(--ok-ink);
+      border: 1px solid #cdeed6;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 30px;
+    }
+    footer a { color: var(--accent-dark); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>AI Text Summarizer</h1>
+      <p>Paste an article or upload a .txt file, choose a summary length, and get a concise summary back.</p>
+      <span class="badge">Active backend: {{ active_backend }}</span>
+    </header>
+
+    {% if error %}
+      <div class="alert error">{{ error }}</div>
+    {% endif %}
+
+    <form class="panel" method="post" enctype="multipart/form-data">
+      <label for="text">Paste your text</label>
+      <textarea id="text" name="text" placeholder="Paste an article, report, or any long piece of text here...">{{ submitted_text }}</textarea>
+
+      <div class="divider">— or —</div>
+
+      <div class="field">
+        <label for="file">Upload a .txt file</label>
+        <input type="file" id="file" name="file" accept=".txt">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Summary length</label>
+          <div class="length-options">
+            <label><input type="radio" name="length" value="short" {% if selected_length == 'short' %}checked{% endif %}> <span>Short</span></label>
+            <label><input type="radio" name="length" value="medium" {% if selected_length == 'medium' or not selected_length %}checked{% endif %}> <span>Medium</span></label>
+            <label><input type="radio" name="length" value="long" {% if selected_length == 'long' %}checked{% endif %}> <span>Long</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Summarize</button>
+        <span class="hint">Works fully offline in demo mode — no API key required.</span>
+      </div>
+    </form>
+
+    {% if result %}
+      <div class="panel result">
+        <h2>Summary</h2>
+        <div class="summary-text">{{ result.summary }}</div>
+        <span class="backend-tag">Generated with: {{ result.backend_label }}</span>
+        <div class="stats">
+          <span><strong>{{ result.stats.original_words }}</strong> words &rarr; <strong>{{ result.stats.summary_words }}</strong> words</span>
+          <span><strong>{{ result.stats.original_sentences }}</strong> sentences &rarr; <strong>{{ result.stats.summary_sentences }}</strong> sentences</span>
+          <span><strong>{{ result.stats.reduction_pct }}%</strong> shorter</span>
+        </div>
+      </div>
+    {% endif %}
+
+    <footer>
+      AI Text Summarizer &mdash; built with Flask + a from-scratch extractive summarizer (with optional Anthropic/OpenAI LLM mode).
+    </footer>
+  </div>
+</body>
+</html>
