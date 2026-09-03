@@ -98,8 +98,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
 
     label = {
-        "anthropic": "Anthropic Claude (LLM)",
         "openai": "OpenAI (LLM)",
+        "anthropic": "Anthropic Claude (LLM)",
         "extractive": "Extractive / demo mode (no API key configured)",
     }.get(backend, backend)
 

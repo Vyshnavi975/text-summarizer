@@ -104,7 +104,7 @@ def create_app() -> Flask:
 
 def _backend_label(backend: str) -> str:
     return {
-        "anthropic": "Anthropic Claude (LLM mode)",
         "openai": "OpenAI (LLM mode)",
+        "anthropic": "Anthropic Claude (LLM mode)",
         "extractive": "Extractive algorithm (demo mode — no API key set)",
     }.get(backend, backend)

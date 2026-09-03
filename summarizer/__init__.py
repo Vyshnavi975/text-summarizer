@@ -12,8 +12,9 @@ Two summarization backends are available:
   "demo mode" backend and always works.
 
 * ``summarizer.llm`` — an LLM-based abstractive summarizer that calls
-  the Anthropic or OpenAI API when a key is available in the
-  environment (``ANTHROPIC_API_KEY`` or ``OPENAI_API_KEY``).
+  the OpenAI API when ``OPENAI_API_KEY`` is set (Anthropic is
+  supported too, via ``ANTHROPIC_API_KEY``, as an alternative
+  provider).
 
 ``summarizer.core.summarize()`` picks whichever backend is appropriate
 and is the single entry point used by both the CLI (``summarize.py``)

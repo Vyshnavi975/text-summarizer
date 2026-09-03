@@ -3,10 +3,10 @@
 flask>=3.0.0
 
 # Optional — only needed if you want LLM-based summarization instead
-# of the built-in offline extractive summarizer. Uncomment whichever
+# of the built-in offline extractive summarizer. Uncomment the
 # provider you plan to use (matching the API key you set).
-# anthropic>=0.34.0
 # openai>=1.40.0
+# anthropic>=0.34.0        # alternative provider
 
 # Optional — for running the test suite.
 pytest>=7.4.0
