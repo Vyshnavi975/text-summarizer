@@ -19,8 +19,8 @@ VALID_LENGTHS = ("short", "medium", "long")
 
 
 def get_backend_name() -> str:
-    """Return the backend that would be used right now: 'openai',
-    'anthropic', or 'extractive' (demo mode)."""
+    """Return the backend that would be used right now: 'openai'
+    or 'extractive' (demo mode)."""
     return llm_backend_name() or "extractive"
 
 
